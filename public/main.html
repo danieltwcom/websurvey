@@ -14,12 +14,14 @@
 <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />  
 <!--StyleSheet for Main.html-->	
 <link rel="stylesheet"  type="text/css" href="/styles/main.css"/>	
+<link rel="stylesheet"  type="text/css" href="/styles/global.css"/>	
 	 
 <head>
 	<title>Main Page</title>
 </head>	
 <body>
-	<div class="wrapper">
+    <div class="loading-icon" id="loading-icon"></div>
+    <div class="wrapper">
 		<!--Top-->
 	    <header class="main-header">
 			<!--BCIT Logo-->
@@ -36,7 +38,7 @@
     	<!-- trigger button -->
     <button>
 		<img src="/images/doge-update.jpg" class="user-image" alt="User Image"/>
-		Creighton Lee
+        <label id = "nav-username"></label>
 		<i class="fa fa-caret-down" aria-hidden="true"></i>
 	</button>
     	<!-- dropdown menu -->
@@ -46,9 +48,9 @@
 			Profile
 			</a>
 		</li>
-        <li><a id="l-but" href="#">
-			<i class="fa fa-sign-in" aria-hidden="true"></i>
-			Login
+		<li><a id="p-but" href="/admin">
+			<i class="fa fa-user" aria-hidden="true"></i>
+			Admin
 			</a>
 		</li>
         <li><a id="lo-but" href="/logout">
@@ -68,48 +70,55 @@
 					<img class="doge" src="/images/doge-update.jpg" alt="User Image"/>
 				</div>
 				<div class="pull-right">
-					<p>Creighton Lee</p>
+					<p id = "pull-right-username"></p>
+                    <p id = "pull-right-department"></p>
 				</div>
 			</div>
 			<ul class="sidebar-menu">
             <li class="sidebar-title">SURVEY DASHBOARD</li>
-            <li class="active treeview">
+            <li class="treeview">
               <a href="#">
                 <i class="fa fa-plus-square fa-lg"></i> <span>CREATE</span><i class="fa fa-angle-left pull-right"></i> 
               </a>
               <ul class="treeview-menu">
-                <li class="active"><a href="#"><i class="fa fa-file"></i> NEW</a></li>
-                <li><a href="#"><i class="fa fa-clipboard"></i> TEMPLATE</a></li>
+                <li class="active">
+                    <a href="#" id = "new-btn"><i class="fa fa-file"></i>NEW</a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa fa-clipboard"></i>  TEMPLATE
+                    </a>
+                </li>
 				</ul>
             </li>
             <li class="treeview">
-              <a href="#">
+              <a href="#" id='modify-btn'>
                 <i class="fa fa-pencil-square"></i>
                 <span>MODIFY</span>
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="#" id="view-btn">
                 <i class="fa fa-th"></i> <span>VIEW</span> 
               </a>
             </li>
 			<li>
-              <a href="#">
+              <a href="#" id="publish-btn">
                 <i class="fa fa-check-square"></i> <span>PUBLISH</span>
               </a>
             </li>
-			<li>
-              <a href="#">
-                <i class="fa fa-tasks"></i> <span>OTHER TAB</span>
-              </a>
-            </li>
-            <li><a href="#"><i class="fa fa-book"></i> Documentation</a></li>
+            <li><a href="#"><i class="fa fa-book"></i> DOCUMENTATION</a></li>
           </ul>
 		</section>	
 	</div>
 	
 	<div class="content-wrapper" style="height: auto;">
-		<section class="content">
+        <div class="status-bar" id="status-bar">
+            <label class = "status-text" id="status-text"></label>
+            <button type="button" class="status-bar-close" id="status-bar-close">close</button>
+        </div>
+		<section class="content" id="main-content">
+
 			<div class="row">
 
 			</div>
@@ -121,8 +130,6 @@
 	</div>
 	<footer class="main-footer">
 		<div class="pull-right hidden-xs">
-			  <button type="button" class="btn btn-success">SAVE</button>
-			  <button type="button" class="btn btn-danger">CANCEL</button>
 		</div>
 		<div class="copyright">
 			<strong> copyright 2017 BCITSSD Team
@@ -134,7 +141,30 @@
 		
 	</div>
 </body>
+<script>
+    // Global function and variables
+    var status_text = document.getElementById("status-text");
+    var statusBar = document.getElementById("status-bar");
+    
+    // status bar function
+    function showStatusBar(string, type=" alert alert-success" ){
+        if(type == "red"){
+            type = " alert alert-danger"
+        }
+        statusBar.style.display = "block";
+        status_text.innerHTML = string;
+        statusBar.className = "status-bar";
+        statusBar.className += type;
+        setTimeout(function(){
+            $(statusBar).fadeOut("slow");
+        },5000);        
+    }
+</script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
 <script src="scripts/mainbundle.js"></script>
+<script src="scripts/loadingbundle.js"></script>
+<script src="scripts/main_actionbundle.js"></script>
+
 
 </html>
