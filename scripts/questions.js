@@ -8,7 +8,7 @@ var questionDiv = document.getElementById("questionDiv"),
     pbar = document.getElementById("pbar"),
     pbarText = document.getElementById("pbarText");
 
-var regEx = /^[a-zA-Z0-9 \.\,\-\!\?\&]{0,75}$/;
+var regEx = /^[a-zA-Z0-9 \'\"\.\,\-\!\?\&]{0,75}$/;
 
 import swal from 'sweetalert2';
 const swal = require('sweetalert2');
@@ -24,18 +24,34 @@ $(document).ready(function() {
         url: "/client",
         data: {
             client: true,
-            department_id: 1
         },
         type: "post",
         success: function(resp) {
             console.log(resp);
             if(resp) {
+                // survey asnwer obj to send
+                var respWithAnswer = resp;
+                function recordAnswerClicked(button_with_QAid){
+                    if(button_with_QAid.classList.contains("SAinput")){
+                        var question_number = button_with_QAid.id[button_with_QAid.id.length -1];
+                        respWithAnswer.questions[question_number-1].result = button_with_QAid.value;
+                    }else{
+                        var option_number = button_with_QAid.id[button_with_QAid.id.length -1];
+                        var question_number = button_with_QAid.id[button_with_QAid.id.length -2];
+                        respWithAnswer.questions[question_number-1].result = option_number-1;
+                    }
+                    
+                }
                 
                 var questionsList = [],
                     optionsDivList = [],
-                    optionsList = [];
+                    MCoptionsList = [],
+                    MAoptionsList = [];
                 
                 for (var i=0; i < resp.questions.length; i++) {
+                    // assign default question result equal empty
+                    respWithAnswer.questions[i].result = "";
+                    
                     var question = document.createElement("div");
                     question.id = "question" + i;
                     question.className = "question";
@@ -50,8 +66,6 @@ $(document).ready(function() {
                     } else if (resp.questions[i].question.length >= 100) {
                         questionsList[i].style.fontSize = "125%";
                     }
-                    
-                    console.log(resp.questions[i].question.length);
                     
                     questionDiv.appendChild(question);
                     
@@ -73,7 +87,7 @@ $(document).ready(function() {
                     answerDiv.className = "answerDiv";
                     answerWrapDiv.appendChild(answerDiv);
                     
-                    if (resp.questions[i].question_variable == null) {
+                    if (resp.questions[i].question_image == null || resp.questions[i].question_image == "" || resp.questions[i].question_image == undefined) {
                         answerWrapDiv.style.width = "100%";
                     } else {
                         var answerImageDiv = document.createElement("div");
@@ -82,7 +96,7 @@ $(document).ready(function() {
 
                         var answerImage = document.createElement("img");
                         answerImage.className = "answerImage";
-                        answerImage.src = resp.questions[i].question_variable;
+                        answerImage.src = resp.questions[i].question_image;
                         answerImageDiv.appendChild(answerImage);
                     }
                     
@@ -96,22 +110,34 @@ $(document).ready(function() {
                             MCoptions.id = "MCoptions"+(i+1)+(j+1);
                             MCoptions.innerHTML = resp.questions[i].answers[j];
                             answerDiv.appendChild(MCoptions);
-
-                            optionsList.push(MCoptions);
-
+                            
+                            MCoptionsList.push(MCoptions);
+                            
+                            if (resp.questions[i].answers[j].length >= 25 && resp.questions[i].answers[j].length < 50) {
+                                MCoptionsList[j].style.fontSize = "125%";
+                            } else if (resp.questions[i].answers[j].length >= 50 && resp.questions[i].answers[j].length < 75) {
+                                MCoptionsList[j].style.fontSize = "110%";
+                            } else if (resp.questions[i].answers[j].length >= 75 && resp.questions[i].answers[j].length < 100) {
+                                MCoptionsList[j].style.fontSize = "90%";
+                            } else if (resp.questions[i].answers[j].length >= 90) {
+                                MCoptionsList[j].style.fontSize = "85%";
+                            }
+                            
                             MCoptions.addEventListener("click", function() {
                                 var option = this.id;
-                                for(var l=0; l < optionsList.length; l++) {
-                                    if(optionsList[l].classList.contains("question" + (counter + 1))) {
-                                        if(optionsList[l].id == option) {
-                                            
-                                            optionsList[l].style.backgroundColor = "orange";
-                                            optionsList[l].style.border = ".25vw inset orange";
-                                            optionsList[l].style.boxShadow = "0 0 .75vw black";
+                              
+                                for(var l=0; l < MCoptionsList.length; l++) {
+                                    recordAnswerClicked(this)
+                                    
+                                    if(MCoptionsList[l].classList.contains("question" + (counter + 1))) {
+                                        if(MCoptionsList[l].id == option) {                                            
+                                            MCoptionsList[l].style.backgroundColor = "orange";
+                                            MCoptionsList[l].style.border = ".25vw inset orange";
+                                            MCoptionsList[l].style.boxShadow = "0 0 .75vw black";
                                         } else {
-                                            optionsList[l].style.backgroundColor = "yellow";
-                                            optionsList[l].style.border = ".25vw outset yellow";
-                                            optionsList[l].style.boxShadow = ".2vw .2vw 1.25vw black";
+                                            MCoptionsList[l].style.backgroundColor = "yellow";
+                                            MCoptionsList[l].style.border = ".25vw outset yellow";
+                                            MCoptionsList[l].style.boxShadow = ".2vw .2vw 1.25vw black";
                                         }
                                     }
                                 }
@@ -120,7 +146,7 @@ $(document).ready(function() {
                         
                     } else if (resp.questions[i].question_type == "shortAns") {
                         
-                        var SAinput = document.createElement("input");
+                        var SAinput = document.createElement("textarea");
                         SAinput.maxLength = "75";
                         SAinput.id = "SAinput" + (i+1);
                         SAinput.className = "SAinput";
@@ -146,6 +172,7 @@ $(document).ready(function() {
                         wordCounter.classList.add(SAinput.id);
                         
                         SAinput.addEventListener("keyup", function() {
+                            recordAnswerClicked(this)
                             var thisID = this.id;
                             
                             var length = this.value.length;
@@ -153,6 +180,19 @@ $(document).ready(function() {
                             var inputs = document.getElementsByClassName("SAinput");
                             var errors = document.getElementsByClassName("errMsg");
                             var counters = document.getElementsByClassName("wordCounter");
+                            
+//                            if (this.value.length >= 0 && this.value.length < 20) {
+//                                this.innerHTML = innerHTML + "<br>";
+//                                this.style.fontSize = "250%";
+//                            } else if (this.value.length >= 20 && this.value.length < 35) {
+//                                this.style.fontSize = "220%";
+//                            } else if (this.value.length >= 35 && this.value.length < 50) {
+//                                this.style.fontSize = "175%";
+//                            } else if (this.value.length >= 50 && this.value.length < 65) {
+//                                this.style.fontSize = "145%";
+//                            } else if (this.value.length >= 65) {
+//                                this.style.fontSize = "115%";
+//                            }
                             
                             for (var j=0; j < counters.length; j++) {
                                 if (counters[j].classList.contains(thisID)) {
@@ -195,12 +235,25 @@ $(document).ready(function() {
                         });
                         SAinput.addEventListener("keydown", function() {
                             var thisID = this.id;
-                            
+            
                             var length = this.value.length;
                             var finalLength = this.maxLength - length;
                             var inputs = document.getElementsByClassName("SAinput");
                             var errors = document.getElementsByClassName("errMsg");
                             var counters = document.getElementsByClassName("wordCounter");
+                            
+//                            if (this.value.length >= 0 && this.value.length < 20) {
+//                                this.innerHTML = innerHTML + "<br>";
+//                                this.style.fontSize = "250%";
+//                            } else if (this.value.length >= 20 && this.value.length < 35) {
+//                                this.style.fontSize = "220%";
+//                            } else if (this.value.length >= 35 && this.value.length < 50) {
+//                                this.style.fontSize = "175%";
+//                            } else if (this.value.length >= 50 && this.value.length < 65) {
+//                                this.style.fontSize = "145%";
+//                            } else if (this.value.length >= 65) {
+//                                this.style.fontSize = "115%";
+//                            }
                             
                             for (var j=0; j < counters.length; j++) {
                                 if (counters[j].classList.contains(thisID)) {
@@ -254,13 +307,16 @@ $(document).ready(function() {
                         
                         trueOption.className = "TFoptions";
                         trueOption.innerHTML = "True";
+                        trueOption.id = "TFoptions"+(i+1)+(1);
                         falseOption.className = "TFoptions";
                         falseOption.innerHTML = "False";
+                        falseOption.id = "TFoptions"+(i+1)+(2);
                         
                         answerDiv.appendChild(trueOption);
                         answerDiv.appendChild(falseOption);
                         
                         trueOption.addEventListener("click", function() {
+                            recordAnswerClicked(this)
                             this.style.backgroundColor = "orange";
                             this.style.border = ".25vw inset orange";
                             this.style.boxShadow = "0 0 .75vw black";
@@ -270,6 +326,7 @@ $(document).ready(function() {
                             falseOption.style.boxShadow = ".2vw .2vw 1.25vw black";
                         });
                         falseOption.addEventListener("click", function() {
+                            recordAnswerClicked(this)
                             this.style.backgroundColor = "orange";
                             this.style.border = ".25vw inset orange";
                             this.style.boxShadow = "0 0 .75vw black";
@@ -278,7 +335,81 @@ $(document).ready(function() {
                             trueOption.style.border = ".25vw outset yellow";
                             trueOption.style.boxShadow = ".2vw .2vw 1.25vw black";
                         });
+                    } else if (resp.questions[i].question_type == "multipleAnswer") {
                         
+                        
+                        var MAnote = document.createElement("div");
+                        MAnote.className = "MAnote";
+                        MAnote.innerHTML = "Select all that apply:";
+                        answerDiv.appendChild(MAnote);
+                        
+                        for(var j=0; j < resp.questions[i].answers.length; j++) {
+                            
+                            var MAoptions = document.createElement("button");
+                            MAoptions.className = "MAoptions";
+                            MAoptions.classList.add("MAquestion" + (i+1));
+                            MAoptions.id = "MAoptions"+(i+1)+(j+1);
+                            MAoptions.innerHTML = resp.questions[i].answers[j];
+                            answerDiv.appendChild(MAoptions);
+                            
+                            MAoptionsList.push(MAoptions);
+                            
+                            if (resp.questions[i].answers[j].length >= 25 && resp.questions[i].answers[j].length < 50) {
+                                MAoptionsList[j].style.fontSize = "125%";
+                            } else if (resp.questions[i].answers[j].length >= 50 && resp.questions[i].answers[j].length < 75) {
+                                MAoptionsList[j].style.fontSize = "110%";
+                            } else if (resp.questions[i].answers[j].length >= 75 && resp.questions[i].answers[j].length < 100) {
+                                MAoptionsList[j].style.fontSize = "90%";
+                            } else if (resp.questions[i].answers[j].length >= 90) {
+                                MAoptionsList[j].style.fontSize = "85%";
+                            }
+                            
+                            var selected = 1;
+                            
+                            MAoptions.addEventListener("click", function() {
+                                var option = this.id;
+                                for(var l=0; l < MAoptionsList.length; l++) {
+                                    if(MAoptionsList[l].classList.contains("MAquestion" + (counter + 1))) {
+                                        if(MAoptionsList[l].id == option){
+                                        if(!MAoptionsList[l].classList.contains("selected")) {
+                                            MAoptionsList[l].style.backgroundColor = "orange";
+                                            MAoptionsList[l].style.border = ".25vw inset orange";
+                                            MAoptionsList[l].style.boxShadow = "0 0 .75vw black";
+                                            selected = 2;
+                                            MAoptionsList[l].classList.add("selected")
+                                        } else  {
+                                            MAoptionsList[l].classList.remove("selected")
+                                            MAoptionsList[l].style.backgroundColor = "yellow";
+                                            MAoptionsList[l].style.border = ".25vw outset yellow";
+                                            MAoptionsList[l].style.boxShadow = ".2vw .2vw 1.25vw black";
+                                            selected = 1
+                                        }
+                                        }
+                                    }
+                                }
+                                
+//                                var option = this.id;
+//                                for(var l=0; l < MAoptionsList.length; l++) {
+//                                    if(MAoptionsList[l].classList.contains("MAquestion" + (counter + 1))) {
+//                                        if(MAoptionsList[l].id == option) {
+//                                            
+//                                            MAoptionsList[l].style.backgroundColor = "orange";
+//                                            MAoptionsList[l].style.border = ".25vw inset orange";
+//                                            MAoptionsList[l].style.boxShadow = "0 0 .75vw black";
+//                                            
+//                                        } else {
+//                                            
+//                                            MAoptionsList[l].style.backgroundColor = "yellow";
+//                                            MAoptionsList[l].style.border = ".25vw outset yellow";
+//                                            MAoptionsList[l].style.boxShadow = ".2vw .2vw 1.25vw black";
+//                                            
+//                                        }
+//                                    }
+//                                }
+                            });
+                        }
+                    } else if (resp.questions[i].quesion_type == "ratingQuest"){
+                        // TODO rating
                     }
                     
                 }
@@ -295,18 +426,6 @@ $(document).ready(function() {
                 
                 next.addEventListener("click", function() {
                     if (counter >= resp.questions.length - 1) {
-                        console.log("sent",respWithAnswer)
-                        counter = resp.questions.length - 1;
-                        $.ajax({
-                            url:"/insertSurveyResult",
-                            type:"post",
-                            data:{
-                                result:respWithAnswer
-                            },
-                            success:function(resp){
-                                console.log(resp)
-                            }
-                        });
                         counter = resp.questions.length - 1;
                     } else {
                         counter++;
@@ -386,7 +505,20 @@ $(document).ready(function() {
                             });
                             setTimeout(function() {
                                 location.href = "/client";
-                            }, 6500);
+                            }, 3000);
+                            
+                            console.log("sent",respWithAnswer)
+                            $.ajax({
+                                url:"/insertSurveyResult",
+                                type:"post",
+                                data:{
+                                    result:respWithAnswer,
+                                    department_id:1
+                                },
+                                success:function(resp){
+                                    console.log(resp)
+                                }
+                            });
                         }
                     });
                 });

@@ -23,9 +23,9 @@ $(document).ready(function () {
         "id": "shortAns",
         "name": "Short Answer"
     }, {
-        "id": "ratingQuest",
-        "name": "Rating Question"
-    }, {
+//        "id": "ratingQuest",
+//        "name": "Rating Question"
+//    }, {
         "id": "multipleAnswer",
         "name": "Multiple Answers"
     }];
@@ -160,7 +160,7 @@ $(document).ready(function () {
                 $(selectQ).find("#answer-row").append($ansDivClone);
             } else {
                 $ansDivClone.find("#answer-option").removeClass();
-                $ansDivClone.find("#answer-option").addClass("answer-option-col");
+                $ansDivClone.find("#answer-option").addClass("answer-option-col form-control");
                 $(selectQ).find("#answer-col").append($ansDivClone);
             }
         } else {

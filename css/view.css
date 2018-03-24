@@ -24,14 +24,35 @@
     background-color: #00397d;
     color: white;
 }
-.csv-download-btn:hover {
-    background-color: green;
-}
 .survey-total-card, .resp-total-card, .recent-total-card{
-    height:200px;
-    width:200px;
+    margin:5px;
+    height:100px;
 }
-.view-info-panel{
-    display: none;
-    margin-top:10px
+
+.search-box{
+    margin: 5px 0 5px 0;
+}
+.chart-div{
+    width: 100%;
+    display: block;
+}
+.canvas-div{
+    display: inline-block;
+    width: 25%
+}
+
+.line-chart-div{
+    display: inline-block;
+    width: 50%;
+}
+.recent_table_div{
+    display: inline-block;
+    height: 80vh;
+    overflow: scroll;
+    overflow-x: hidden;
+    width:45%
+}
+.input-day{
+    min-width: 20px;
+    width:10%;
 }

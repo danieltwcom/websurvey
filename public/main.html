@@ -14,13 +14,11 @@
 <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />  
 <!--StyleSheet for Main.html-->	
 <link rel="stylesheet"  type="text/css" href="/styles/main.css"/>	
-<link rel="stylesheet"  type="text/css" href="/styles/global.css"/>	
 	 
 <head>
 	<title>Main Page</title>
 </head>	
 <body>
-    <div class="loading-icon" id="loading-icon"></div>
     <div class="wrapper">
 		<!--Top-->
 	    <header class="main-header">
@@ -77,9 +75,10 @@
 			<ul class="sidebar-menu">
             <li class="sidebar-title">SURVEY DASHBOARD</li>
             <li class="treeview">
-              <a href="#">
-                <i class="fa fa-plus-square fa-lg"></i> <span>CREATE</span><i class="fa fa-angle-left pull-right"></i> 
+              <a href="#" id = "new-btn">
+                <i class="fa fa-plus-square fa-lg" ></i> <span>CREATE</span>
               </a>
+<!--
               <ul class="treeview-menu">
                 <li class="active">
                     <a href="#" id = "new-btn"><i class="fa fa-file"></i>NEW</a>
@@ -90,21 +89,17 @@
                     </a>
                 </li>
 				</ul>
+-->
             </li>
             <li class="treeview">
               <a href="#" id='modify-btn'>
                 <i class="fa fa-pencil-square"></i>
-                <span>MODIFY</span>
+                <span>SURVEYS</span>
               </a>
             </li>
             <li>
               <a href="#" id="view-btn">
-                <i class="fa fa-th"></i> <span>VIEW</span> 
-              </a>
-            </li>
-			<li>
-              <a href="#" id="publish-btn">
-                <i class="fa fa-check-square"></i> <span>PUBLISH</span>
+                <i class="fa fa-th"></i> <span>RESPONSES</span> 
               </a>
             </li>
             <li><a href="#"><i class="fa fa-book"></i> DOCUMENTATION</a></li>
@@ -115,7 +110,7 @@
 	<div class="content-wrapper" style="height: auto;">
         <div class="status-bar" id="status-bar">
             <label class = "status-text" id="status-text"></label>
-            <button type="button" class="status-bar-close" id="status-bar-close">close</button>
+            <button type="button" class="close status-bar-close" id="status-bar-close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
 		<section class="content" id="main-content">
 
@@ -163,8 +158,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
 <script src="scripts/mainbundle.js"></script>
-<script src="scripts/loadingbundle.js"></script>
 <script src="scripts/main_actionbundle.js"></script>
-
 
 </html>
